@@ -2,9 +2,11 @@
 #
 # aplicativo do Token
 #######
+# http://dainf.ct.utfpr.edu.br/~maurofonseca/doku.php?id=cursos:if68e:geradorsenhas
 
 import hashlib
 import os.path
+import datetime
 
 #######
 
@@ -34,7 +36,30 @@ if not usuario:
     arquivo.write("semente:" + semente)
 
 else:
-    if usuario == input("usuario: ") and hashdasenha == hashlib.sha512(input("senha: ").encode()).hexdigest():
-        print ("deu certo")
+    login = input("usuario: ")
+    senha_login = hashlib.sha512(input("senha: ").encode()).hexdigest()
+    senha_login = senha_login[:2] + senha_login[-2:]
+    if usuario == login and hashdasenha == senha_login:
+        print("deu certo")
+        minuto_senha = -1
+        token = []
+        while True:
+            now = datetime.datetime.now()
+            minuto_atual = now.minute
+            if int(input("aperte 1 para um novo token: ")):
+                # if minuto diferente gerar novos tokens
+                if minuto_atual != minuto_senha or len(token) <= 1:
+                    token.clear()
+                    minuto_senha = now.minute
+                    token.append(semente + str(now.year) + str(now.month) +
+                                 str(now.day) + str(now.hour) + str(now.minute))
+                    print("gerando novos tokens...")
+                    for i in range(1, 6):
+                        token.append(hashlib.sha512(token[i-1].encode()).hexdigest())
+                # else mostrar proximo token
+                else:
+                    tk = token.pop()
+                    print(tk[:2] + tk[-2:])
+
     else:
-        print("nao deu certo")
+        print("erro no login")
