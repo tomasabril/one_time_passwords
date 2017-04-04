@@ -18,6 +18,7 @@ semente = texto.split(":")[1]
 
 
 if not usuario:
+    print("criando novo usuario")
     usuario = input("usuario: ")
     semente = hashlib.sha512(input("semente: ").encode()).hexdigest()
     semente = semente[:2] + semente[-2:]
@@ -38,30 +39,31 @@ else:
             # if minuto diferente gerar novos tokens
             if len(tokens) <= 1:
                 print("acabaram os tokens, espere um minuto")
-            else:
-                if minuto_atual != minuto_senha:
-                    tokens.clear()
-                    minuto_senha = now.minute
-                    tokens.append(semente + str(now.year) + str(now.month) +
-                                  str(now.day) + str(now.hour) + str(now.minute))
-                    print("gerando novos tokens...")
-                    for i in range(1, 6):
-                        tk = hashlib.sha512(tokens[i - 1].encode()).hexdigest()
-                        tk = tk[:2] + tk[-2:]
-                        tokens.append(tk)
+            # else:
+            if minuto_atual != minuto_senha:
+                tokens.clear()
+                minuto_senha = now.minute
+                tokens.append(semente + str(now.year) + str(now.month) +
+                              str(now.day) + str(now.hour) + str(now.minute))
+                print("gerando novos tokens...")
+                for i in range(1, 6):
+                    tk = hashlib.sha512(tokens[i - 1].encode()).hexdigest()
+                    tk = tk[:2] + tk[-2:]
+                    tokens.append(tk)
 
-                # else usar proximo token
-                token_lido = input("token para o usuario " + usuario + " : ")
-                if token_lido in tokens:
-                    # retirando token utilizado e os acima
-                    pos = tokens.index(token_lido)
-                    tam = len(tokens)
-                    for i in range(pos, tam):
-                        tokens.pop()
-                    print("login bem sucedido")
-                else:
-                    print("erro!")
-                # print(tokens)
+            # else usar proximo token
+            token_lido = input("token para o usuario " + usuario + " : ")
+            if token_lido in tokens:
+                # retirando token utilizado e os acima
+                pos = tokens.index(token_lido)
+                tam = len(tokens)
+                for i in range(pos, tam):
+                    tokens.pop()
+                print("login bem sucedido")
+            else:
+                print("erro!")
+            # print(tokens)
 
         else:
             print("usuario não encontrado")
+
